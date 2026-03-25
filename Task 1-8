@@ -33,4 +33,25 @@ sudo cp -r dash/* /var/www/html/
 
 <local host ip address><filename>.mpd
 
-Task
+Task 5
+
+ping <server ip address>
+curl http://<server ip address>/dash/video1.mpd
+curl http://<server ip address>/dash/video2.mpd
+
+iperf -s
+iperf -c <server ip address>
+
+curl http://<server ip address>//dash/video1.mpd
+curl http://<server ip address>//dash/video2.mpd
+
+Task 6
+iperf -s
+sudo spt install iperf iproute2 iptables
+sudo iptables -t mangle -A OUTPUT -p tcp --dport 5001 -j MARK --set mark 10
+sudo tc 
+
+sudo tc qdisc add dev enp0s3 root handle 1: prio
+sudo tc filter add dev enp0s3 protocol ip parent 1:0 prio 1 handle 10 fw flowid 1:1
+sudo tc filter add dev enp0s3 protocol ip parent 1:0 prio 2 handle 20 fw flowid 1:2
+iperf -c 192.168.1.252 -t 60 -b 1M
