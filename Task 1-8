@@ -1,36 +1,44 @@
-Task 1
+#Task 1
+##Installing ffmpeg tool
 sudo apt update
 sudo apt install ffmpeg 
 
-Task 2
+##Task 2
+##Creating folders to store the video
 mkdir videos
 mkdir dash
 ls
+##Moving the video files into the folder
 mv ~/Downloads/<filename>.mp4 videos/video1.mp4
 mv ~/Downloads/<filename>.mp4 videos/video2.mp4
 ls videos
 
+##Transcoding the video 1 bitrate to 1.5Mbps, 2.0 Mbps, 4.0 Mbps
 ffmpeg -i videos/video1.mp4 -b:v 1500k dash/video1_1.5.mp4
 ffmpeg -i videos/video1.mp4 -b:v 2000k dash/video1_2.mp4
 ffmpeg -i videos/video1.mp4 -b:v 4000k dash/video1_4.mp4
 
+##Transcoding the video 2 bitrate to 1.5Mbps, 2.0 Mbps, 4.0 Mbps
 ffmpeg -i videos/video2.mp4 -b:v 1500k dash/video2_1.5.mp4
 ffmpeg -i videos/video2.mp4 -b:v 2000k dash/video2_2.mp4
 ffmpeg -i videos/video2.mp4 -b:v 4000k dash/video2_4.mp4
 
-Task 3
+#Task 3
+##Creating DASH streaming files
 ffmpeg -i dash/video1_1.5.mp4 -i dash/video1_2.mp4 -i dash/video1_4.mp4 -map 0:v -map 1:v -map 2:v -c copy -f dash dash/video1.mpd
 ffmpeg -i dash/video2_1.5.mp4 -i dash/video2_2.mp4 -i dash/video2_4.mp4 -map 0:v -map 1:v -map 2:v -c copy -f dash dash/video2.mpd
 
-Task 4
+#Task 4
+##Installing Apache tool which adds HTTP server capability 
 sudo apt install apache2 -y
 sudo systemctl start apache2
 sudo systemctl status apache2
 
-sudo cp -r dash/* /var/www/html/
+##Copying the DASH streaming files into the Apache web server directory
 ls /var/www/html
 sudo cp -r dash/* /var/www/html/
 
+##Expected Result 
 <local host ip address><filename>.mpd
 
 Task 5
