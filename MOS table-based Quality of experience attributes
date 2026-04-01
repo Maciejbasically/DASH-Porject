@@ -1,0 +1,7 @@
+| **Quality of Experience Attributes**                                                                            | **MOS** |
+| --------------------------------------------------------------------------------------------------------------- | ------- |
+| Quality of experience attributes, 0 start up delay, 0% packet loss, No visible latency, highest bitrate quality | **5**   |
+| Rare buffering, 1–2 seconds start up delay, 1% packet loss, small delay, HD quality                             | **4**   |
+| Occasional buffering, 4+ seconds start up delay, 3% packet loss, noticeable delays, medium quality              | **3**   |
+| Frequent buffering, 8+ seconds start up delay, 5% packet loss, high delays, low quality                         | **2**   |
+| Constant buffering, 10+ seconds start up delay, 5%+ packet loss, very high delays, very low quality             | **1**   |
