@@ -38,28 +38,56 @@ sudo systemctl status apache2
 ls /var/www/html
 sudo cp -r dash/* /var/www/html/
 
-##Expected Result 
+##Running on the browser to check are available hosted on the web server
 <local host ip address><filename>.mpd
 
-Task 5
-
+#Task 5
+##On the clients virtual machine 
 ping <server ip address>
+##Requesting files from the web server 
 curl http://<server ip address>/dash/video1.mpd
 curl http://<server ip address>/dash/video2.mpd
 
+##On the server virtual machine to start a conenction
 iperf -s
+##On the clients virtual machine to connect to the server 
 iperf -c <server ip address>
 
-curl http://<server ip address>//dash/video1.mpd
-curl http://<server ip address>//dash/video2.mpd
+##Streaming the video on the client’s media player
+http://<server ip address>//dash/video1.mpd
+http://<server ip address>//dash/video2.mpd
 
-Task 6
-iperf -s
+#Task 6
+#iperf -s
 sudo spt install iperf iproute2 iptables
 sudo iptables -t mangle -A OUTPUT -p tcp --dport 5001 -j MARK --set mark 10
 sudo tc 
 
+##Assigning a higher priority to the connection and low priority to video connection
 sudo tc qdisc add dev enp0s3 root handle 1: prio
 sudo tc filter add dev enp0s3 protocol ip parent 1:0 prio 1 handle 10 fw flowid 1:1
 sudo tc filter add dev enp0s3 protocol ip parent 1:0 prio 2 handle 20 fw flowid 1:2
 iperf -c 192.168.1.252 -t 60 -b 1M
+
+#Task 7
+##Applying TBF on the server virtual machine with the following characteristics: rate 2.5Mbps, burst 20K, and limit the latency caused by the TBF to at most 50ms
+sudo tc qdisc add dev enp0s3 root tbf rate 2.5mbit burst 20k latency 50ms
+tc -s qdisc show dev enp0s3
+##Running and iperf test on the client virtual machine 
+iperf -c 192.168.56.101 -u -t 20 -w 256k
+
+##Applying HTB on the server virtual machine with Guaranteed minimum bandwidth of 2.5Mbps, maximum bandwidth of the class is 5Mbps and burst length of 20k
+sudo tc qdisc del dev enp0s3 root 2>/dev/null
+sudo tc qdisc add dev enp0s3 root handle 1: htb default 10
+sudo tc class add dev enp0s3 parent 1: classid 1:10 htb rate 2.5mbit ceil 5mbit burst 20k
+##Running and iperf test on the client virtual machine 
+iperf -c 192.168.56.101 -u -t 20 -w 256k
+
+##Adding Traffic policing on the clients virtual machine that Applies dropping at 3.5 Mbps
+sudo tc qdisc del dev enp0s3 ingress 2>/dev/null
+sudo tc qdisc add dev enp0s3 handle ffff: ingres
+sudo tc qdisc add dev enp0s3 handle ffff: ingress
+sudo tc filter add dev enp0s3 parent ffff: protocol ip prio 1 u32 match u32 0 0 police rate 3.5mbit burst 10k drop flowid :1
+
+##Running and iperf test on the client virtual machine 
+iperf -c 192.168.56.101 -u -t 20 -w 256k
